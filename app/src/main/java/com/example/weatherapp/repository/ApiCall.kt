@@ -1,4 +1,4 @@
-package com.example.weatherapp
+package com.example.weatherapp.repository
 
 import com.example.weatherapp.model.WeatherData
 import retrofit2.Response
@@ -16,7 +16,7 @@ interface ApiCall {
 
     @GET("weather?")
     // for dynamic query parameters use @Query
-     suspend fun getWeather(@Query("q") cityName: String, @Query("appid") appKey: String): Response<WeatherData>
+     suspend fun getWeatherResponse(@Query("q") cityName: String, @Query("appid") appKey: String): Response<WeatherData>
 
 
 }

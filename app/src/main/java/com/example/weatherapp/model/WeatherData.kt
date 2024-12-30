@@ -1,7 +1,6 @@
 package com.example.weatherapp.model
 
 data class WeatherData(
-
     val name: String,
     val weather: List<Weather>,
     val main: Main,
@@ -13,7 +12,8 @@ data class Wind(
 )
 
 data class Main(
-    val humidity: Int
+    val humidity: Int,
+    val temp: Double
     )
 
 data class Weather(
