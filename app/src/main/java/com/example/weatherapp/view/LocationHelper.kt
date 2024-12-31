@@ -1,5 +1,6 @@
 package com.example.weatherapp.view
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -17,7 +18,7 @@ import androidx.core.location.LocationManagerCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.util.Locale
 
-class LocationHelper(private val context: MainActivity) {
+class LocationHelper(private val context: Activity) {
 
     // this function check device is connected to internet or not
     fun isOnline(): Boolean {
@@ -87,11 +88,7 @@ class LocationHelper(private val context: MainActivity) {
             }
             .setNegativeButton("Cancel") { dialog, which ->
                 dialog.dismiss()
-                Toast.makeText(
-                    context,
-                    "Permission denied. Cannot fetch location.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(context, "Permission denied. Cannot fetch location.", Toast.LENGTH_SHORT).show()
             }
             .create()
 

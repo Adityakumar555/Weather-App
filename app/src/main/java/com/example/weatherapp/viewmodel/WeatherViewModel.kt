@@ -14,19 +14,13 @@ class WeatherViewModel : ViewModel() {
 
     private val setWeatherData = MutableLiveData<WeatherData>()
 
-
     val weatherData: LiveData<WeatherData> = setWeatherData
 
-     fun getWeatherFromViewModel(cityName: String, key: String) {
 
+    fun getWeatherFromViewModel(cityName: String, key: String) {
         viewModelScope.launch {
             val call = weatherRepository.getWeatherFromRepository(cityName, key)
-
-            if (call.isSuccessful) {
-                setWeatherData.postValue(call.body())
-            } else {
-                setWeatherData.postValue(null)
-            }
+            setWeatherData.postValue(call.body())
         }
 
     }

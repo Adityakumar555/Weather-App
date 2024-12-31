@@ -13,7 +13,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.weatherapp.BuildConfig
 import com.example.weatherapp.databinding.ActivityMainBinding
@@ -30,10 +29,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationHelper: LocationHelper
-    private var locationDialogShown = false
 
     // Flag to control the display of Toast messages
-    private var isToastShown = false
+    private var isErrorToastShown = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,11 +56,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Set swipe-to-refresh listener
-        binding.swipeRefreshLayout.setOnRefreshListener {
+        binding.swipeToRefresh.setOnRefreshListener {
             Toast.makeText(this, "Refreshing weather data...", Toast.LENGTH_SHORT).show()
             Handler(Looper.getMainLooper()).postDelayed({
                 getLocation() // Refresh the location and weather data
-                binding.swipeRefreshLayout.isRefreshing = false
+                binding.swipeToRefresh.isRefreshing = false
             }, 3000)
         }
     }
@@ -98,7 +96,11 @@ class MainActivity : AppCompatActivity() {
                             val currentLocation =
                                 locationHelper.getCityName(location.latitude, location.longitude)
                             currentLocation?.let { getWeather(it) }
-                            Toast.makeText(this, "Weather data fetched.", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this,
+                                "Weather Fetched.",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         } else {
                             Toast.makeText(
                                 this,
@@ -106,26 +108,26 @@ class MainActivity : AppCompatActivity() {
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
+
                     }
+
                 } else {
                     // Request location permissions if not granted
                     locationHelper.requestPermissions()
                 }
             } else {
                 // Show dialog if location is disabled
-                if (!locationDialogShown) {
-                    val dialog = MaterialAlertDialogBuilder(this)
-                        .setTitle("Location")
-                        .setMessage("Please enable your location.")
-                        .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
-                        .setPositiveButton("Open location") { dialog, _ ->
-                            val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                            startActivity(intent)
-                            dialog.dismiss()
-                            locationDialogShown = true
-                        }
-                    dialog.show()
-                }
+                val dialog = MaterialAlertDialogBuilder(this)
+                    .setTitle("Location")
+                    .setMessage("Please enable your location to fetch weather.")
+                    .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+                    .setPositiveButton("Open location") { dialog, _ ->
+                        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                        startActivity(intent)
+                        dialog.dismiss()
+                    }
+                dialog.show()
+
             }
         } else {
             // Show a message if the device is offline
@@ -135,8 +137,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getWeather(search: String) {
-
-        if (!locationHelper.isOnline()) { // Check if the device is online
+        // Check if the device is online
+        if (!locationHelper.isOnline()) {
             Toast.makeText(
                 this,
                 "No internet connection. Please check your network.",
@@ -147,36 +149,44 @@ class MainActivity : AppCompatActivity() {
 
         binding.progressBar.visibility = View.VISIBLE // Show progress bar
 
-        if (search.isNotEmpty()) { // Check if search input is not empty
+        // Check if search input is not empty
+        if (search.isNotEmpty()) {
             weatherViewModel.getWeatherFromViewModel(search, BuildConfig.API_KEY)
-            weatherViewModel.weatherData.observe(this, Observer { weathers ->
+
+            // Use observeOnce to ensure observer is attached only once
+            weatherViewModel.weatherData.observe(this) { weathers ->
                 binding.progressBar.visibility = View.GONE
 
                 if (weathers != null) { // Update UI with weather data
-                    isToastShown = false
-
                     binding.temperature.text =
                         "${String.format("%.1f", weathers.main.temp - 273.15)}\u00B0"
                     binding.humidity.text = weathers.main.humidity.toString()
                     binding.wind.text = weathers.wind.speed.toString()
                     binding.weather.text = weathers.weather[0].main
                     binding.location.text = weathers.name
+                    // Reset the error toast flag when data is successfully fetched
+                    isErrorToastShown = false
+
                 } else {
-                    binding.progressBar.visibility = View.GONE
-                    // Show a Toast if the city name is incorrect
-                    if (!isToastShown) {
-                        Toast.makeText(this, "Please enter correct city name", Toast.LENGTH_SHORT)
-                            .show()
-                        isToastShown = true
+                    if (!isErrorToastShown) {
+                        Toast.makeText(
+                            this,
+                            "Enter a correct city name.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        isErrorToastShown = true // Set the flag to true to avoid multiple toasts
                     }
                 }
-            })
+
+
+            }
         } else {
             binding.progressBar.visibility = View.GONE
             // Show a message if no city name is entered
             Toast.makeText(this, "Please enter a city name", Toast.LENGTH_SHORT).show()
         }
     }
+
 
     // Handle permission request result
     override fun onRequestPermissionsResult(
@@ -198,31 +208,20 @@ class MainActivity : AppCompatActivity() {
                 // Permission granted, fetch location
                 getLocation()
             } else {
-                if (!shouldShowRequestPermissionRationale(permissions[0])) {
-                    // Show dialog if permission is permanently denied
-                    locationHelper.showPermissionDeniedDialog()
-                } else {
-                    // Show a message if permission is denied
-                    Toast.makeText(
-                        this,
-                        "Permission denied. Cannot fetch location.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+                // Show dialog if permission is permanently denied
+                locationHelper.showPermissionDeniedDialog()
             }
         }
     }
 
+
     private fun setCurrentDateAndDay() {
         // Set the current date and day on the UI
         val calendar = Calendar.getInstance()
-
         val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
         val date = dateFormat.format(calendar.time)
-
         val dayFormat = SimpleDateFormat("EEEE", Locale.getDefault())
         val day = dayFormat.format(calendar.time)
-
         binding.date.text = date
         binding.day.text = day
     }
