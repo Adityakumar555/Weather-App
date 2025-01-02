@@ -14,12 +14,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
-import com.example.weatherapp.BuildConfig
 import com.example.weatherapp.databinding.ActivityMainBinding
 import com.example.weatherapp.viewmodel.WeatherViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.test.weatherapp.mobile.BuildConfig
 import java.text.SimpleDateFormat
 import java.util.Locale
 

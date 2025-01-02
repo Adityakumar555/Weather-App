@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#47B8FA"
-            tools:context=".view.MainActivity">
+            tools:context="com.example.weatherapp.view.MainActivity">
 
             <RelativeLayout
                 android:id="@+id/progress_bar"
