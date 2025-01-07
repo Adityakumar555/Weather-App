@@ -78,7 +78,7 @@ class LocationHelper(private val context: Activity) {
         val dialog = MaterialAlertDialogBuilder(context)
             .setTitle("Permission Required")
             .setMessage("This app requires location permission to fetch your current weather. Please enable the location permission in the app settings.")
-            .setPositiveButton("Go to Settings") { dialog, which ->
+            .setPositiveButton("Go to Settings") { dialog, _ ->
                 // Open the app settings screen
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                 val uri = Uri.fromParts("package", context.packageName, null)
@@ -86,7 +86,7 @@ class LocationHelper(private val context: Activity) {
                 context.startActivity(intent)
                 dialog.dismiss()
             }
-            .setNegativeButton("Cancel") { dialog, which ->
+            .setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss()
                 Toast.makeText(context, "Permission denied. Cannot fetch location.", Toast.LENGTH_SHORT).show()
             }

@@ -11,18 +11,14 @@ import kotlinx.coroutines.launch
 class WeatherViewModel : ViewModel() {
 
     private val weatherRepository: WeatherRepository by lazy { WeatherRepository() }
-
     private val setWeatherData = MutableLiveData<WeatherData>()
-
     val weatherData: LiveData<WeatherData> = setWeatherData
-
 
     fun getWeatherFromViewModel(cityName: String, key: String) {
         viewModelScope.launch {
             val call = weatherRepository.getWeatherFromRepository(cityName, key)
             setWeatherData.postValue(call.body())
         }
-
     }
 
 }

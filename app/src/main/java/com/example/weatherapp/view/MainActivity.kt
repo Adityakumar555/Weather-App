@@ -96,17 +96,9 @@ class MainActivity : AppCompatActivity() {
                             val currentLocation =
                                 locationHelper.getCityName(location.latitude, location.longitude)
                             currentLocation?.let { getWeather(it) }
-                            Toast.makeText(
-                                this,
-                                "Weather Fetched.",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(this, "Weather Fetched.", Toast.LENGTH_SHORT).show()
                         } else {
-                            Toast.makeText(
-                                this,
-                                "Location is unavailable. Please check your GPS settings.",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(this, "Location is unavailable. Please check your GPS settings.", Toast.LENGTH_SHORT).show()
                         }
 
                     }
