@@ -24,3 +24,4 @@ This Weather App provides real-time weather data based on a user’s location or
 * The weather details will include temperature (in Celsius), humidity, wind speed, and general weather description.
 
 # App Video
+![Record_2025-01-07-12-12-24-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/dc034180-56be-46db-873e-9c8d8f657cab)
